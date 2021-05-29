@@ -1,16 +1,14 @@
 package tk.veni.api.handlers.commands;
 
 import tk.veni.api.models.embeds.ErrorEmbeds;
-import tk.veni.api.utils.DataFormatter;
 import tk.veni.api.utils.PermissionsHandler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CommandHandler {
 
-    public static List<Command> commands = new ArrayList<>();
+    private static List<Command> commands = new ArrayList<>();
 
     public static void addCommand(Command command) {
         CommandHandler.commands.add(command);
@@ -37,7 +35,7 @@ public class CommandHandler {
 
         if (cd == null) return;
 
-        if (PermissionsHandler.checkAccessLevel(context, cd.accessLevel())) {
+        if (PermissionsHandler.checkAccessLevel(context.getAuthor().getUser(), cd.accessLevel())) {
             if (context.getAuthor().hasPermission(cd.userPermissions())) {
                 String[] arguments = getArguments(command, args);
                 try {
@@ -49,16 +47,8 @@ public class CommandHandler {
                 context.sendMessage(ErrorEmbeds.missingMemberPermissions(cd.userPermissions()));
             }
         } else {
-            context.getChannel().sendMessage(ErrorEmbeds.missingAccessLevel(cd.accessLevel())).queue();
+            context.sendMessage(ErrorEmbeds.missingAccessLevel(cd.accessLevel()));
         }
-    }
-
-    public static void findAndRun(String trigger, CommandContext context, String arguments) {
-        Command command = CommandHandler.findCommand(trigger);
-
-        if (command == null || command.getCommandData() == null) return;
-        context.setCommand(command);
-        CommandHandler.doCommand(command, context, arguments);
     }
 
     private static String[] getArguments(Command command, String args) {

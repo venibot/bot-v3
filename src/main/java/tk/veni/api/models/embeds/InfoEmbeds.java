@@ -1,6 +1,7 @@
 package tk.veni.api.models.embeds;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import tk.veni.VeniBot;
 import tk.veni.api.handlers.commands.BotCommand;
@@ -27,6 +28,12 @@ public class InfoEmbeds {
         builder.addField("Использование", cd.name() + " " + cd.usage(), false);
         builder.addField("Необходимые вам права", DataFormatter.getPermissions(cd.userPermissions()), false);
         builder.addField("Необходимые боту права", DataFormatter.getPermissions(cd.botPermissions()), false);
+        return builder.build();
+    }
+
+    public static MessageEmbed botLatency(JDA bot) {
+        EmbedBuilder builder = basicInfoEmbed();
+        builder.addField("Задержка до вебсокета", bot.getGatewayPing() + " мс", false);
         return builder.build();
     }
 

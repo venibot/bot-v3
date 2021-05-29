@@ -1,14 +1,19 @@
 package tk.veni;
 
 import com.google.gson.Gson;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import tk.veni.api.handlers.commands.Command;
 import tk.veni.api.handlers.commands.CommandHandler;
 import tk.veni.api.handlers.commands.CommandListener;
+import tk.veni.api.handlers.slashCommands.SlashCommandHandler;
+import tk.veni.api.handlers.slashCommands.SlashCommandListener;
 import tk.veni.api.models.Config;
 
 import java.io.File;
@@ -34,10 +39,17 @@ public class VeniBot {
         if (!loadCommands("src/main/java/tk/veni/commands", "tk.veni.commands")) {
             throw new Exception("Commands load error");
         }
+        if (!initSlashCommands(bot)) {
+            throw new Exception("Slash commands init error");
+        }
+        if (!loadSlashCommands("src/main/java/tk/veni/slashCommands", "tk.veni.slashCommands")) {
+            throw new Exception("Slash commands load error");
+        }
         bot.addEventListener(new CommandListener());
+        bot.addEventListener(new SlashCommandListener());
     }
 
-    public static Config loadConfig() {
+    private static Config loadConfig() {
         try {
             String content = new String(Files.readAllBytes(Paths.get("config.json")));
             Config config = new Gson().fromJson(content, Config.class);
@@ -48,7 +60,7 @@ public class VeniBot {
         }
     }
 
-    public static boolean loadEvents(ShardManager bot, String path, String eventsPackage) {
+    private static boolean loadEvents(ShardManager bot, String path, String eventsPackage) {
         try {
             eventsPackage += ".";
             File dir = new File(path);
@@ -68,13 +80,13 @@ public class VeniBot {
         }
     }
 
-    public static boolean loadCommands(String path, String commands_package) {
+    private static boolean loadCommands(String path, String commandsPackage) {
         try {
-            commands_package += ".";
+            commandsPackage += ".";
             File dir = new File(path);
             for (File file : dir.listFiles()) {
                 if (file.isFile() && file.getName().endsWith("Command.java")) {
-                    Class cmd = Class.forName(commands_package + file.getName().replace(".java", ""));
+                    Class cmd = Class.forName(commandsPackage + file.getName().replace(".java", ""));
                     try {
                         Command command = (Command) cmd.newInstance();
                         CommandHandler.addCommand(command);
@@ -83,7 +95,43 @@ public class VeniBot {
                         continue;
                     }
                 } else if (file.isDirectory()) {
-                    loadCommands(file.getPath(), commands_package + file.getName());
+                    loadCommands(file.getPath(), commandsPackage + file.getName());
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static boolean initSlashCommands(ShardManager bot) {
+        for (JDA jda: bot.getShards()) {
+            CommandUpdateAction commands = jda.updateCommands();
+
+            commands.addCommands(new CommandData("ping", "Получение информации о задержке бота"));
+
+            commands.queue();
+        }
+        return true;
+    }
+
+    private static boolean loadSlashCommands(String path, String commandsPackage) {
+        try {
+            commandsPackage += ".";
+            File dir = new File(path);
+            for (File file : dir.listFiles()) {
+                if (file.isFile() && file.getName().endsWith("SlashCommand.java")) {
+                    Class cmd = Class.forName(commandsPackage + file.getName().replace(".java", ""));
+                    try {
+                        tk.veni.api.handlers.slashCommands.Command command = (tk.veni.api.handlers.slashCommands.Command) cmd.newInstance();
+                        SlashCommandHandler.addCommand(command);
+                    } catch (ClassCastException e) {
+                        System.out.println(cmd.getName() + " не является слэш командой, пропускаю");
+                        continue;
+                    }
+                } else if (file.isDirectory()) {
+                    loadSlashCommands(file.getPath(), commandsPackage + file.getName());
                 }
             }
             return true;
