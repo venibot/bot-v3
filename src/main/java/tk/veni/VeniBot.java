@@ -5,7 +5,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -110,6 +112,9 @@ public class VeniBot {
             CommandUpdateAction commands = jda.updateCommands();
 
             commands.addCommands(new CommandData("ping", "Получение информации о задержке бота"));
+            commands.addCommands(new CommandData("say", "Вывод текста от лица бота")
+                    .addOptions(new OptionData(OptionType.STRING, "text",
+                            "Текст, который необходимо вывести", true)));
 
             commands.queue();
         }
