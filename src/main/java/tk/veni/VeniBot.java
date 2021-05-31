@@ -115,6 +115,10 @@ public class VeniBot {
             commands.addCommands(new CommandData("say", "Вывод текста от лица бота")
                     .addOptions(new OptionData(OptionType.STRING, "text",
                             "Текст, который необходимо вывести", true)));
+            commands.addCommands(new CommandData("embed", "Вывод embed сообщения от лица бота")
+                    .addOptions(new OptionData(OptionType.STRING, "title", "Заголовок", true),
+                            new OptionData(OptionType.STRING, "description", "Описание", true),
+                            new OptionData(OptionType.STRING, "color", "Цвет embed сообщения(в формате HEX)")));
 
             commands.queue();
         }
