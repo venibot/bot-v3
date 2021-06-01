@@ -11,7 +11,7 @@ public interface Command {
     }
 
     default void showHelp(CommandContext context) {
-        context.sendMessage(InfoEmbeds.commandHelp(context.getCommand()));
+        context.sendMessage(InfoEmbeds.commandHelp(this));
     }
 
 }

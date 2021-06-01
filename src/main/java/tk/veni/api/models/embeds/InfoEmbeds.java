@@ -21,6 +21,7 @@ public class InfoEmbeds {
         BotCommand cd = command.getCommandData();
         builder.setTitle("Помощь по команде " + cd.name());
         builder.setDescription(cd.description());
+        builder.setFooter("<> - обязательный аргумент, [] - необязательный");
         builder.addField("Алиасы(другие варианты написания команды)",
                 cd.aliases().length != 0 ? String.join(", ", cd.aliases()).replaceAll(", $", "") : "Отсутствуют",
                 true);
@@ -29,6 +30,14 @@ public class InfoEmbeds {
         builder.addField("Необходимые вам права", DataFormatter.getPermissions(cd.userPermissions()), false);
         builder.addField("Необходимые боту права", DataFormatter.getPermissions(cd.botPermissions()), false);
         return builder.build();
+    }
+
+    public static EmbedBuilder commandsHelp() {
+        EmbedBuilder builder = basicInfoEmbed();
+        builder.setTitle("Помощь по командам бота");
+        builder.setDescription("При возникновении проблем с ботом обращайтесь на [сервер поддержки](https://discord.gg/uEhrZUX)");
+        builder.setFooter("Зачёркнутые команды вы или бот не можете использовать | <> - обязательный аргумент, [] - необязательный");
+        return builder;
     }
 
     public static MessageEmbed botLatency(JDA bot) {

@@ -16,6 +16,10 @@ public class SlashCommandHandler {
         SlashCommandHandler.commands.add(command);
     }
 
+    public static List<Command> getCommands() {
+        return commands;
+    }
+
     public static Command findCommand(String trigger) {
         for (Command command: SlashCommandHandler.commands) {
             SlashCommand cd = command.getCommandData();

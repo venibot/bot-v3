@@ -14,6 +14,10 @@ public class CommandHandler {
         CommandHandler.commands.add(command);
     }
 
+    public static List<Command> getCommands() {
+        return commands;
+    }
+
     public static Command findCommand(String trigger) {
         for (Command command: CommandHandler.commands) {
             BotCommand cd = command.getCommandData();
@@ -37,7 +41,7 @@ public class CommandHandler {
 
         if (PermissionsHandler.checkAccessLevel(context.getAuthor().getUser(), cd.accessLevel())) {
             if (context.getAuthor().hasPermission(cd.userPermissions())) {
-                String[] arguments = getArguments(command, args);
+                context.setArguments(getArguments(command, args));
                 try {
                     command.doCommand(context);
                 } catch (Exception e) {

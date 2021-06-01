@@ -16,6 +16,8 @@ public class CommandContext {
 
     private final String trigger;
 
+    private String[] arguments;
+
     public CommandContext(MessageReceivedEvent msgEvent, String usedPrefix, String trigger) {
         this.msgEvent = msgEvent;
         this.usedPrefix = usedPrefix;
@@ -56,6 +58,14 @@ public class CommandContext {
 
     public String getTrigger() {
         return trigger;
+    }
+
+    public String[] getArguments() {
+        return arguments;
+    }
+
+    public void setArguments(String[] arguments) {
+        this.arguments = arguments;
     }
 
     public Message sendMessage(CharSequence text) {
